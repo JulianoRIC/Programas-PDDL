@@ -2,20 +2,18 @@
 
  (:domain pass_boat)
  
- (:objects left right - river miss1 miss2 miss3 - missionaire han1 han2 han3 - hannibal  stopped - boat)
+ (:objects left right - side miss1 miss2 miss3 han1 han2 han3 - passenger  stopped - boat)
  
- (:init (at-r  right)
+ (:init (at-emb right)
         (at han1  right)
-        (at-m miss1 right)
-        (at-m miss2 right)
+        (at miss1 right)
+        (at miss2 right)
         (at han2  right)
-        (at-m miss3 right)
+        (at miss3 right)
         (at han3  right)
         (empty stopped)
-        ;(full moving)
-)
+ )
  
- ; (:goal (and(at-m miss1 left) (at-m miss2 left) (at-m miss3 left))) 
- (:goal (and(at han2 left)(at-m miss2 left)(at-m miss3 left)(at han3 left)(at-m miss1 left)(at han1 left)))
+ (:goal (and(at han2 left)(at miss2 left)(at miss3 left)(at han3 left)(at miss1 left)(at han1 left)))
 
 )

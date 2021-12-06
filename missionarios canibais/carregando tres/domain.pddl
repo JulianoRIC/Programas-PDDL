@@ -5,47 +5,42 @@
   :typing 
  )
  
-(:types missionaire hannibal boat river)
+(:types side passenger boat)
 
-(:predicates 
- (at-r ?r - river)
- (at-h ?r - river)
- (at   ?h - hannibal    ?r - river)
- (at-m ?m - missionaire ?r - river)
+(:predicates
+ (at-emb ?s - side)
+ (at ?p - passenger ?s - side)
  (empty ?b - boat)
- ;(full  ?b - boat)
- (carryM ?m - missionaire ?b - boat)
- (carryH ?h - hannibal ?b - boat)
+ (carry ?p - passenger ?b - boat)
 )
 
-(:action move
- :parameters(?r1 ?r2 - river)
- :precondition(at-r ?r1)
- :effect(and(at-r ?r2)(not(at-r ?r1)))
+
+;passa um passageiro de um lado para outro
+(:action pass  
+ :parameters (?s1 ?s2 - side)
+ :precondition(at-emb ?s1)
+ :effect(and(at-emb ?s2) (not(at-emb ?s1)))
 )
 
-(:action embarkM
- :parameters(?m ?m2 - missionaire ?r - river ?b - boat)
- :precondition(and(at-m ?m ?r)(at-r ?r)(empty ?b))
- :effect(and(carryM ?m ?b)(not(at-m ?m ?r))(not(empty ?b)))
+(:action embark
+ :parameters(?p ?p2 - passenger ?s - side ?b - boat)
+ :precondition(and(at ?p ?s) (at-emb ?s) (empty ?b))
+ :effect(and(carry ?p ?b) (not(at ?p ?s)) (not(empty ?b)))
 )
 
-(:action disembarkM
- :parameters(?m - missionaire  ?r - river ?b - boat)
- :precondition(and(carryM ?m ?b)(at-r ?r))
- :effect(and(at-m ?m ?r)(empty ?b)(not(carryM ?m ?b)))
-)
-
-(:action embarkH
- :parameters(?h - hannibal ?m - missionaire ?r - river ?b - boat)
- :precondition(and(at ?h ?r)(at-r ?r)(empty ?b))
- :effect(and(carryH ?h ?b)(not(at ?h ?r))(not(empty ?b)))
-)
-
-(:action disembarkH
- :parameters(?h - hannibal ?r - river ?b - boat)
- :precondition(and(carryH ?h ?b)(at-r ?r))
- :effect(and(at ?h ?r)(empty ?b)(not(carryH ?h ?b)))
+(:action disembark
+ :parameters(?p - passenger ?s - side ?b - boat)
+ :precondition(and(carry ?p ?b) (at-emb ?s))
+ :effect(and(at ?p ?s) (empty ?b) (not(carry ?p ?b)))
 )
 
 )
+
+
+
+
+ 
+ 
+ 
+ 
+ 
