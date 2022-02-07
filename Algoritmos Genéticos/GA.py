@@ -70,5 +70,29 @@ calc_fitness()
 
 print(fitnessList) #list of fitness 
 
+weightsList = []
 
+def calc_weights():
+        for w in range(len(fitnessList)):
+                weights = fitnessList[w]/sum(fitnessList)
+                weightsList.append(weights)
+
+calc_weights()
+
+print(weightsList) #list of weights
+
+couple = []
+
+def roullette_selection(): 
+        s = random.choices(people, weightsList, k = 2)
+        for i in range(2):
+                c = get_bits(s[i])
+                couple.append(c)
+
+roullette_selection()
+
+print(couple) #couple selected
+
+def crossover():
+        pass
 
