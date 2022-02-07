@@ -41,15 +41,34 @@ def get_float(bits):
 #size of population
 n = 4
 
+people = []
+
 def population():
         for i in range(n):
                 p = random.SystemRandom().uniform(0, math.pi)
                 if p == math.pi:
-                        p = round(p)
+                        p = round(p)                             
                 else:
                         print(p)
                 person = get_bits(p)
                 print(person)
+                people.append(person)
+                
+population() #population
 
-population()
+print(people) #list of people
+
+fitnessList = []
+
+def calc_fitness():
+        for t in range(len(people)):
+                people[t] = get_float(people[t])
+                fitness   = people[t] + math.sin(32*people[t])
+                fitnessList.append(fitness)
+
+calc_fitness()
+
+print(fitnessList) #list of fitness 
+
+
 
