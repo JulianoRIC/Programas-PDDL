@@ -63,7 +63,7 @@ fitnessList = []
 def calc_fitness():
         for t in range(len(people)):
                 people[t] = get_float(people[t])
-                fitness   = people[t] + math.sin(32*people[t])
+                fitness   = people[t] + abs(math.sin(32*people[t]))
                 fitnessList.append(fitness)
 
 calc_fitness()
