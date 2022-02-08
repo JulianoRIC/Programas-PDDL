@@ -116,11 +116,18 @@ def crossover():
 
 crossover() 
 
+new_population = []
+
 #mutation
 def mutation():
         pm = random.randint(1,1000)
+        #pm = 1
         if   pm == 1:
                 sd = descendants[random.randint(0,1)]
+                if sd == descendants[0]:
+                        new_population.append(descendants[1])
+                else:
+                        new_population.append(descendants[0])
                 ap = random.randint(0,32)
                 if sd[ap] == '0':
                         m = '1'
@@ -128,13 +135,17 @@ def mutation():
                         m = '0'
 
                 md = sd[:ap] + m + sd[ap+1:]
-                
+                new_population.append(md)
                 print("selected descendant:",sd)
                 print("position:",ap)
                 print("the mutated chromossome is: \n",md)
         else:
+                new_population.append(descendants[0])
+                new_population.append(descendants[1])
                 print("doesn't occurred a mutation")
-                print(descendants)        
-mutation()          
+                #print(descendants)
+               
+mutation()     
+print("the new_population is", new_population)
 
 
