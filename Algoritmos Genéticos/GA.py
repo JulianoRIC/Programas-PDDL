@@ -74,7 +74,7 @@ weightsList = []
 
 def calc_weights():
         for w in range(len(fitnessList)):
-                weights = fitnessList[w]/sum(fitnessList)
+                weights = fitnessList[w]/ (sum(fitnessList)/len(fitnessList))
                 weightsList.append(weights)
 
 calc_weights()
@@ -93,6 +93,23 @@ roullette_selection()
 
 print(couple) #couple selected
 
+dad = couple[0] 
+mom = couple[1]
+
+
+#single point crossover 
 def crossover():
-        pass
+        pc = random.randint(1,10)/10 
+        if   0.1 <= pc <= 0.7:
+                print('cruzamento resultou em: \n')
+                d = dad[0:16]+mom[16:32]
+                m = mom[0:16]+dad[16:32]
+        else:
+                print("copia identica \n")
+                d = dad[:]
+                m = mom[:]
+        print(d)
+        print(m)
+
+crossover()
 
