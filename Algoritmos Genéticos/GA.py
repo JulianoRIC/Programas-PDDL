@@ -6,6 +6,7 @@ L = 4 * 8 #size of chromossome in bits
 import struct
 import random
 import math
+import string
 
 
 def floatToBits(f):
@@ -96,20 +97,44 @@ print(couple) #couple selected
 dad = couple[0] 
 mom = couple[1]
 
+descendants = []
 
 #single point crossover 
 def crossover():
         pc = random.randint(1,10)/10 
         if   0.1 <= pc <= 0.7:
                 print('cruzamento resultou em: \n')
-                d = dad[0:16]+mom[16:32]
-                m = mom[0:16]+dad[16:32]
+                d1 = dad[0:16]+mom[16:32]
+                d2 = mom[0:16]+dad[16:32]
         else:
                 print("copia identica \n")
-                d = dad[:]
-                m = mom[:]
-        print(d)
-        print(m)
+                d1 = dad[:]
+                d2 = mom[:]
+        descendants.append(d1)
+        descendants.append(d2)
+        print(descendants)
 
-crossover()
+crossover() 
+
+#mutation
+def mutation():
+        pm = random.randint(1,1000)
+        if   pm == 1:
+                sd = descendants[random.randint(0,1)]
+                ap = random.randint(0,32)
+                if sd[ap] == '0':
+                        m = '1'
+                else:
+                        m = '0'
+
+                md = sd[:ap] + m + sd[ap+1:]
+                
+                print("selected descendant:",sd)
+                print("position:",ap)
+                print("the mutated chromossome is: \n",md)
+        else:
+                print("doesn't occurred a mutation")
+                print(descendants)        
+mutation()          
+
 
