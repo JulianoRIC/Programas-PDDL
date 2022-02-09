@@ -8,7 +8,6 @@ import random
 import math
 import string
 
-
 def floatToBits(f):
         s = struct.pack('>f', f)
         return struct.unpack('>L', s)[0]
@@ -52,16 +51,16 @@ def pop_len():
         else:
                 return p
                 
-n = pop_len()
+#n = pop_len()
 
-g = n 
-print("population is ", n)
+#g = n 
+#print("population is ", n)
 
-people = []
+#people = []
 
 #generates a list of people (chromossomes)
 def population():
-        for i in range(n):
+        for i in range(g):
                 p = random.SystemRandom().uniform(0, math.pi)
                 if p == math.pi:
                         p = round(p)                             
@@ -71,11 +70,11 @@ def population():
                 print(person)
                 people.append(person)
                 
-population() #population
+#population() #population
 
-print(people) #list of people
+#print(people) #list of people
 
-fitnessList = []
+#fitnessList = []
 
 #fitness calculation for each chromossome
 def calc_fitness():
@@ -84,22 +83,22 @@ def calc_fitness():
                 fitness   = people[t] + abs(math.sin(32*people[t]))
                 fitnessList.append(fitness)
 
-calc_fitness()
+#calc_fitness()
 
-print(fitnessList) #list of fitness 
+#print(fitnessList) #list of fitness 
 
-weightsList = []
+#weightsList = []
 
 def calc_weights():
         for w in range(len(fitnessList)):
                 weights = fitnessList[w]/ (sum(fitnessList)/len(fitnessList))
                 weightsList.append(weights)
 
-calc_weights()
+#calc_weights()
 
-print(weightsList) #list of weights
+#print(weightsList) #list of weights
 
-couple = []
+#couple = []
 
 def roullette_selection(): 
         s = random.choices(people, weightsList, k = 2)
@@ -107,14 +106,14 @@ def roullette_selection():
                 c = get_bits(s[i])
                 couple.append(c)
 
-roullette_selection()
+#roullette_selection()
 
-print(couple) #couple selected
+#print(couple) #couple selected
 
-dad = couple[0] 
-mom = couple[1]
+#dad = couple[0] 
+#mom = couple[1]
 
-descendants = []
+#descendants = []
 
 #single point crossover 
 def crossover():
@@ -131,10 +130,10 @@ def crossover():
         descendants.append(d2)
         print(descendants)
 
-crossover() 
+#crossover() 
 
-new_population = []
-chrome = []
+#new_population = []
+#chrome = []
 
 #mutation
 def mutation():
@@ -160,6 +159,7 @@ def mutation():
         new_population.append(descendants[1])
         print("doesn't occurred a mutation")
 
+'''
 while True:
     mutation()                
     n = n +1
@@ -168,11 +168,14 @@ while True:
             chrome.append(i)
             print(chrome)
     break
-
 '''
-n = 4
+chrome = []
+n = pop_len()
+g = n
 
-while n > 0:
+while True:
+    while(len(chrome) != g):    
+        print("population number is ", g)
         people = []
         population()   #population
         print("Population of chromossomes:",people)
@@ -190,13 +193,16 @@ while n > 0:
         descendants = []
         crossover() #chromossomes crossover to generate descendants
         new_population = []
-        while(len(new_population) <= 2):
-            mutation() #test of mutation of chromossomes
-            new_population.append(new_population)
-            print(new_population)
-        print("Pop is: ", new_population)
-        n = n-1
+        #chrome = []
+        mutation()                
+        for i in new_population:
+            chrome.append(i)
+            print(chrome)
+        n = n +1
+    break
+
 print("done!")
-'''
+print("population length: ", len(chrome))
+
     
 
