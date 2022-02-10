@@ -88,7 +88,7 @@ def roullette_selection():
 #single point crossover 
 def crossover():
         pc = random.randint(1,10)/10 
-        if   0.1 <= pc <= 0.7:
+        if   0.1 <= pc <= 0.9:
                 print('cruzamento resultou em: \n')
                 d1 = dad[0:16]+mom[16:32]
                 d2 = mom[0:16]+dad[16:32]
@@ -102,8 +102,8 @@ def crossover():
 
 #mutation
 def mutation():
-    pm = random.randint(1,10)
-    if  pm == 1:
+    pm = random.randint(1,10)/10 
+    if   0.1 <= pm <= 0.5:
         sd = descendants[random.randint(0,1)]
         if sd == descendants[0]:
             new_population.append(descendants[1])
@@ -139,10 +139,11 @@ hist = []
 new_fitnessList = []
 avg_fit = []
 novalista =  []
-nl = int(g**2) 
+alist = []
+nl = int(g - g/2)
 
 while True:
-    while(len(chrome) < nl):    
+    while(len(chrome) <= g):    
         print("population number is ", g)
         people = []
         population()   #population
@@ -165,22 +166,29 @@ while True:
         mutation()                
         for i in new_population:
             chrome.append(i)
-        print("New pop is:  ", chrome[-g:])
-        #n = n +1
+        print("New pop is:  ", chrome) #[-g:]
 
+    '''    
     calc_new_fitness()
-    hist.append(new_fitnessList)
-    a =  list(mean(x) for x in zip(*[iter(new_fitnessList)] * g))
-    #print("Avg list: ", list(mean(x) for x in zip(*[iter(new_fitnessList)] * g)))
-    print("Avg list: ", a)    
+    avg_fit.extend(new_fitnessList)
+    my_list = avg_fit
+    step = g
+    for i, _ in enumerate(my_list[::step]):
+         sub_list = my_list[i*g:] if (i+1)*g > len(chrome) else my_list[i*g:(i+1)*g]  # Condition if the len(my_list) % step != 0
+         a = (sum(sub_list)/float(len(sub_list))) 
+         alist.append(a)
+    print("Avg list: ", alist)    
+    '''
+    
     break
 
 print("done!")
 print("population length: ", len(chrome))
 
-
-x_values = list(range(0, g))
-y_values = [f for f in a]
+'''
+x_values = list(range(g))
+#y_values = [f for f in new_fitnessList]
+y_values = [f for f in alist]
 plot.plot(x_values, y_values)
 plot.show()
-
+'''
