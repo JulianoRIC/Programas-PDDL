@@ -128,7 +128,7 @@ hist = []
 new_fitnessList = []
 
 while True:
-    while(len(chrome) < g):    
+    while(len(chrome) != g):    
         print("population number is ", g)
         people = []
         population()   #population
@@ -170,11 +170,16 @@ def calc_new_fitness():
                 new_fitnessList.append(fitness)
         
 calc_new_fitness()
-print(new_fitnessList)
+print("New fitness list", new_fitnessList)
 
-print(len(listAvg))
-x_values = list(range(0, g,2))
+'''
+print(listAvg)
+x_values = list(range(0, g))
 y_values = [f for f in listAvg]
 plt.plot(x_values, y_values)
 plt.show()
+
+'''
+
+
 

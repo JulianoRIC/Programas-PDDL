@@ -113,21 +113,33 @@ descendants = []
 
 #single point crossover 
 def crossover():
-        pc = random.randint(1,10)/10 
-        if   0.1 <= pc <= 0.7:
-                print('cruzamento resultou em: \n')
-                d1 = dad[0:16]+mom[16:32]
-                d2 = mom[0:16]+dad[16:32]
-        else:
-                print("copia identica \n")
-                d1 = dad[:]
-                d2 = mom[:]
-        descendants.append(d1)
-        descendants.append(d2)
-        print("Descendants:" ,descendants)
+        for i in range(0,n):
+                pc = random.randint(1,10)/10 
+                if   0.1 <= pc <= 0.7:
+                        print('cruzamento resultou em: \n')
+                        d1 = dad[0:16]+mom[16:32]
+                        d2 = mom[0:16]+dad[16:32]
+                else:
+                        print("copia identica \n")
+                        d1 = dad[:]
+                        d2 = mom[:]
+                descendants.append(d1)
+                descendants.append(d2)
+                
+        #print("Descendants:" ,descendants)
+                return descendants
 
-crossover() 
+hist_cross = []
+#crossover() 
+for i in range(n-nl):
+        crossover() 
+        b = list(x for x in crossover())
+hist_cross.extend(b)
+print(hist_cross)
+print(len(hist_cross))
 
+
+'''
 new_population = []
 chrome = []
 
@@ -157,9 +169,7 @@ def mutation():
         print("doesn't occurred a mutation")
 
 mutation()
-for i in new_population:
-            chrome.append(i)
-            print("New chromossomes: ", chrome)
-
+print("New chromossomes: ", new_population)
 print("done!")
-print("population length: ", len(chrome))
+print("population length: ", len(new_population))
+'''

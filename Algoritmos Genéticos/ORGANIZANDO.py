@@ -6,7 +6,9 @@ L = 4 * 8 #size of chromossome in bits
 import struct
 import random
 import math
-import string
+from statistics import mean
+from statistics import median
+import matplotlib.pyplot as plot
 
 def floatToBits(f):
         s = struct.pack('>f', f)
@@ -51,13 +53,6 @@ def pop_len():
         else:
                 return p
                 
-#n = pop_len()
-
-#g = n 
-#print("population is ", n)
-
-#people = []
-
 #generates a list of people (chromossomes)
 def population():
         for i in range(g):
@@ -70,12 +65,6 @@ def population():
                 print(person)
                 people.append(person)
                 
-#population() #population
-
-#print(people) #list of people
-
-#fitnessList = []
-
 #fitness calculation for each chromossome
 def calc_fitness():
         for t in range(len(people)):
@@ -83,37 +72,18 @@ def calc_fitness():
                 fitness   = people[t] + abs(math.sin(32*people[t]))
                 fitnessList.append(fitness)
 
-#calc_fitness()
-
-#print(fitnessList) #list of fitness 
-
-#weightsList = []
 
 def calc_weights():
         for w in range(len(fitnessList)):
                 weights = fitnessList[w]/ (sum(fitnessList)/len(fitnessList))
                 weightsList.append(weights)
 
-#calc_weights()
-
-#print(weightsList) #list of weights
-
-#couple = []
 
 def roullette_selection(): 
         s = random.choices(people, weightsList, k = 2)
         for i in range(2):
                 c = get_bits(s[i])
                 couple.append(c)
-
-#roullette_selection()
-
-#print(couple) #couple selected
-
-#dad = couple[0] 
-#mom = couple[1]
-
-#descendants = []
 
 #single point crossover 
 def crossover():
@@ -129,11 +99,6 @@ def crossover():
         descendants.append(d1)
         descendants.append(d2)
         print(descendants)
-
-#crossover() 
-
-#new_population = []
-#chrome = []
 
 #mutation
 def mutation():
@@ -159,29 +124,32 @@ def mutation():
         new_population.append(descendants[1])
         print("doesn't occurred a mutation")
 
-'''
-while True:
-    mutation()                
-    n = n +1
-    while(len(chrome) != g):
-        for i in new_population:
-            chrome.append(i)
-            print(chrome)
-    break
-'''
+#fitness calculation for each chromossome
+def calc_new_fitness():
+        for t in range(len(chrome)):
+                chrome[t] = get_float(chrome[t])
+                fitness   = chrome[t] + abs(math.sin(32*chrome[t]))
+                new_fitnessList.append(fitness)
+                print("List of fitness: ", new_fitnessList)
+
 chrome = []
 n = pop_len()
 g = n
+hist = []
+new_fitnessList = []
+avg_fit = []
+novalista =  []
+nl = int(g**2) 
 
 while True:
-    while(len(chrome) != g):    
+    while(len(chrome) < nl):    
         print("population number is ", g)
         people = []
         population()   #population
         print("Population of chromossomes:",people)
         fitnessList = []
         calc_fitness() #calculates the fitness for each chromossome
-        print("List of fitness: ",fitnessList)
+        print("List of fitness: ", fitnessList)
         weightsList = []
         calc_weights() #calculates the probab weights for each chromossome
         print("Prob weights:",weightsList)
@@ -197,12 +165,22 @@ while True:
         mutation()                
         for i in new_population:
             chrome.append(i)
-            print(chrome)
-        n = n +1
+        print("New pop is:  ", chrome[-g:])
+        #n = n +1
+
+    calc_new_fitness()
+    hist.append(new_fitnessList)
+    a =  list(mean(x) for x in zip(*[iter(new_fitnessList)] * g))
+    #print("Avg list: ", list(mean(x) for x in zip(*[iter(new_fitnessList)] * g)))
+    print("Avg list: ", a)    
     break
 
 print("done!")
 print("population length: ", len(chrome))
 
-    
+
+x_values = list(range(0, g))
+y_values = [f for f in a]
+plot.plot(x_values, y_values)
+plot.show()
 
