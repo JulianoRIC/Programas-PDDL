@@ -103,8 +103,8 @@ def crossover():
 
 #mutation
 def mutation():
-    pm = random.randint(1,10)/10 
-    if  0.0001 <= pm <= 0.1:
+    pm = random.randint(1,100) 
+    if  1 <= pm <= 5:
         sd = descendants[random.randint(0,1)]
         if sd == descendants[0]:
             new_population.append(descendants[1])
@@ -186,3 +186,12 @@ y_values = [f for f in alist]
 plot.plot(x_values, y_values)
 plot.show()
 
+
+xx_value = list(range(0,len(new_fitnessList))) 
+yy_value = [f for f in fitnessList]
+y2_value = [g for g in new_fitnessList]
+
+plot.plot(xx_value, yy_value, label = "fitnessList")
+plot.plot(xx_value, y2_value, label = "newfitnessLis")
+plot.legend()
+plot.show()
