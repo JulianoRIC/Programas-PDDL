@@ -9,6 +9,7 @@ import math
 from statistics import mean
 from statistics import median
 import matplotlib.pyplot as plot
+import numpy as np
 
 def floatToBits(f):
         s = struct.pack('>f', f)
@@ -131,6 +132,7 @@ def calc_new_fitness():
                 fitness   = chrome[t] + abs(math.sin(32*chrome[t]))
                 new_fitnessList.append(fitness)
                 print("List of fitness: ", new_fitnessList)
+        return new_fitnessList
 
 chrome = []
 n = pop_len()
@@ -169,18 +171,36 @@ while True:
         for i in new_population:
             chrome.append(i)
         print("New pop is:  ", chrome) #[-g:]
-
-    '''    
     calc_new_fitness()
-    avg_fit.extend(new_fitnessList)
-    my_list = avg_fit
-    step = g
-    for i, _ in enumerate(my_list[::step]):
-         sub_list = my_list[i*g:] if (i+1)*g > len(chrome) else my_list[i*g:(i+1)*g]  # Condition if the len(my_list) % step != 0
-         a = (sum(sub_list)/float(len(sub_list))) 
-         alist.append(a)
-    print("Avg list: ", alist)    
+    h = int(2)
+    alist = list(np.average(np.reshape(new_fitnessList, (-1, h)), axis=1))
+    print("ALISRT", alist)
     '''
+    for i in new_fitnessList:
+        ids = np.arange(len(new_fitnessList))//g
+        out = np.bincount(ids,new_fitnessList/np.bincount(ids))
+    alist.extend(out)
+    print("IDS ", ids)
+    print("OUT", alist)
+    '''
+
+    '''
+    h = int(g - g/2)
+    for i in range(len(chrome)): 
+        listAvg = [mean(x) for x in zip(*[iter(new_fitnessList)] * h)]
+    alist.append(listAvg)
+    print("The average fitness is:  ", alist)
+    print("TAMANHO FITNESS LIST", len(new_fitnessList))
+    '''
+
+    #avg_fit.extend(new_fitnessList)
+    #my_list = avg_fit
+    #step = g
+    #for i, _ in enumerate(my_list[::step]):
+    #     sub_list = my_list[i*g:] if (i+1)*g > len(chrome) else my_list[i*g:(i+1)*g]  # Condition if the len(my_list) % step != 0
+    #     a = (sum(sub_list)/float(len(sub_list))) 
+    #alist.append(a)
+    #print("Avg list: ", alist)      
     
     break
 
