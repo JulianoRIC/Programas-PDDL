@@ -72,13 +72,13 @@ def calc_fitness():
                 fitness   = people[t] + abs(math.sin(32*people[t]))
                 fitnessList.append(fitness)
 
-
+#probab weights for selection
 def calc_weights():
         for w in range(len(fitnessList)):
                 weights = fitnessList[w]/ (sum(fitnessList)/len(fitnessList))
                 weightsList.append(weights)
 
-
+#couple's selection 
 def roullette_selection(): 
         s = random.choices(people, weightsList, k = 2)
         for i in range(2):
@@ -88,7 +88,7 @@ def roullette_selection():
 #single point crossover 
 def crossover():
         pc = random.randint(1,10)/10 
-        if   0.1 <= pc <= 0.9:
+        if   0.1 <= pc <= 0.7:
                 print('cruzamento resultou em: \n')
                 d1 = dad[0:16]+mom[16:32]
                 d2 = mom[0:16]+dad[16:32]
@@ -103,7 +103,7 @@ def crossover():
 #mutation
 def mutation():
     pm = random.randint(1,10)/10 
-    if   0.1 <= pm <= 0.5:
+    if  pm == 0.001:
         sd = descendants[random.randint(0,1)]
         if sd == descendants[0]:
             new_population.append(descendants[1])
@@ -140,11 +140,13 @@ new_fitnessList = []
 avg_fit = []
 novalista =  []
 alist = []
-nl = int(g - g/2)
+nl = int(2*g)
 
 while True:
-    while(len(chrome) <= g):    
-        print("population number is ", g)
+    while(not(len(chrome) == g)):    
+        print("**********************************************************************************************")
+        print("*******************************NEW ITERATION**************************************************")
+        print("**********************************************************************************************")
         people = []
         population()   #population
         print("Population of chromossomes:",people)
