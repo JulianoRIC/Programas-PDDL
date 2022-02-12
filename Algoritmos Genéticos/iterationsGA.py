@@ -1,4 +1,3 @@
-
 #Algoritmo genético 
 
 L = 4 * 8 #size of chromossome in bits
@@ -173,18 +172,20 @@ chrome = []
 n = pop_len()
 g = n
 
+print("population number is ", g)
+people = []
+population()   #population
+print("Population of chromossomes:",people)
+fitnessList = []
+calc_fitness() #calculates the fitness for each chromossome
+print("List of fitness: ",fitnessList)
+weightsList = []
+calc_weights() #calculates the probab weights for each chromossome
+print("Prob weights:",weightsList)
+
+
 while True:
     while(len(chrome) != g):    
-        print("population number is ", g)
-        people = []
-        population()   #population
-        print("Population of chromossomes:",people)
-        fitnessList = []
-        calc_fitness() #calculates the fitness for each chromossome
-        print("List of fitness: ",fitnessList)
-        weightsList = []
-        calc_weights() #calculates the probab weights for each chromossome
-        print("Prob weights:",weightsList)
         couple = []
         roullette_selection() #selects a couple of chromossomes
         print("The couple selected: ", couple)
@@ -197,12 +198,18 @@ while True:
         mutation()                
         for i in new_population:
             chrome.append(i)
-            print(chrome)
-        n = n +1
+            print("New chromossomes: ",chrome)
+        #n = n +1
     break
 
 print("done!")
 print("population length: ", len(chrome))
 
-    
+x = []
+for j in chrome:
+      x.append(get_float(j))
+print("In n umbers:", x)
+
+
+
 
