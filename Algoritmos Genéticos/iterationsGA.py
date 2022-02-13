@@ -103,7 +103,7 @@ def crossover():
 
 #mutation
 def mutation():
-    pm = random.randint(1,6)
+    pm = random.randint(1,1000)
     if  pm == 1:
         sd = descendants[random.randint(0,1)]
         if sd == descendants[-2]:
@@ -120,6 +120,8 @@ def mutation():
                 print("selected descendant:",sd)
                 print("position:",ap)
                 print("the mutated chromossome is: \n",md)
+        new_population.append(descendants[-2])
+        new_population.append(descendants[-1])    
     else:
         new_population.append(descendants[-2])
         new_population.append(descendants[-1])
@@ -221,7 +223,7 @@ while iterations != iters:
                     print("Nova crossover: ", [descendants[-2], descendants[-1]])
                     #descendants = []    
                     mutation()
-                    #print("NEW POPULATION: ", new_population)
+                    print("NEW POPULATION: ", new_population)
                     print("Mutation: ", [new_population[-2], new_population[-1]])
                     for i in [new_population[-2],new_population[-1]]:
                             new_chrome.append(i)
@@ -235,7 +237,7 @@ while iterations != iters:
             print("NOVA New fitness", new_fitnessList)
                     
                     
-   #break
+            
 
 print("done!")
 print("population length: ", len(chrome))
