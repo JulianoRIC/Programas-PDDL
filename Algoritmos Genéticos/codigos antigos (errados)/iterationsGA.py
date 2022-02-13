@@ -59,7 +59,7 @@ def gen_len():
 #generates a list of people (chromossomes)
 def population():
         for i in range(g):
-                p = random.SystemRandom().uniform(0, 0.005) #era pi
+                p = random.SystemRandom().uniform(0, 0.0000000001) #era pi
                 person = get_bits(p)
                 print(person)
                 people.append(person)
@@ -104,24 +104,30 @@ def crossover():
 #mutation
 def mutation():
     pm = random.randint(1,1000)
+    #pm = 1
     if  pm == 1:
+        print("esse eh o descendants: ", descendants)    
+        md = []
         sd = descendants[random.randint(0,1)]
         if sd == descendants[-2]:
             new_population.append(descendants[-1])
         else:
             new_population.append(descendants[-2])
-            ap = random.randint(0,32)
-            if sd[ap] == '0':
-                m = '1'
-            else:
+            
+        ap = random.randint(0,32)
+        if sd[ap] == '0':
+                m = '1' 
+        else:
                 m = '0'
-                md = sd[:ap] + m + sd[ap+1:]
-                new_population.append(md)
-                print("selected descendant:",sd)
-                print("position:",ap)
-                print("the mutated chromossome is: \n",md)
-        new_population.append(descendants[-2])
-        new_population.append(descendants[-1])    
+        md = sd[:ap] + m + sd[ap+1:]
+        print("selected descendant:",sd)
+        print("position:",ap)
+        print("the mutated chromossome is: \n",md)
+        new_population.append(md)
+        #print("NOVA NOVA POPU: ", new_population)
+        return new_population
+        #return new_population.append(md)
+        
     else:
         new_population.append(descendants[-2])
         new_population.append(descendants[-1])
@@ -223,7 +229,7 @@ while iterations != iters:
                     print("Nova crossover: ", [descendants[-2], descendants[-1]])
                     #descendants = []    
                     mutation()
-                    print("NEW POPULATION: ", new_population)
+                    #print("NEW POPULATION: ", new_population)
                     print("Mutation: ", [new_population[-2], new_population[-1]])
                     for i in [new_population[-2],new_population[-1]]:
                             new_chrome.append(i)
@@ -241,9 +247,3 @@ while iterations != iters:
 
 print("done!")
 print("population length: ", len(chrome))
-
-
-
-
-
-

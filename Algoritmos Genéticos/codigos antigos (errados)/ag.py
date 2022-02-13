@@ -78,7 +78,7 @@ def calc_fitness():
 #probab weights for selection
 def calc_weights():
         for w in range(len(fitnessList)):
-                weights = fitnessList[w]/ (sum(fitnessList)/len(fitnessList))
+                weights = fitnessList[w]/ (sum(fitnessList))
                 weightsList.append(weights)
 
 #couple's selection 
@@ -145,15 +145,22 @@ avg_fit = []
 novalista =  []
 alist = []
 nl = int(2*g)
+new_people = []
+flag = 0
+people = []
 
 while True:
-    while(not(len(chrome) == g)):    
+    while(not(len(chrome) == nl)):    
         print("**********************************************************************************************")
         print("*******************************NEW ITERATION**************************************************")
         print("**********************************************************************************************")
-        people = []
-        population()   #population
-        print("Population of chromossomes:",people)
+        #people = []
+        if people == []:
+                population()   #population
+                print("Population of chromossomes:",people)
+        else:
+                people = new_people
+                print("Poulation of chromossomes JALDALHSADL: ", people)
         fitnessList = []
         calc_fitness() #calculates the fitness for each chromossome
         print("List of fitness: ", fitnessList)
@@ -172,10 +179,16 @@ while True:
         for i in new_population:
             chrome.append(i)
         print("New pop is:  ", chrome) #[-g:]
-    calc_new_fitness()
-    h = int(2)
-    alist = list(np.average(np.reshape(new_fitnessList, (-1, h)), axis=1))
-    print("Average fitness list: ", alist)
+        #people = chrome 
+        #print("Proxima pop = nova pop", people)    
+        calc_new_fitness()
+        for i in new_fitnessList:
+                person = get_bits(i)
+                new_people.append(person)
+                print("NOva populacao e ", new_people)
+    #h = int(2)
+    #alist = list(np.average(np.reshape(new_fitnessList, (-1, h)), axis=1))
+    #print("Average fitness list: ", alist)
     
     break
 
@@ -183,6 +196,8 @@ print("done!")
 print("population length: ", len(chrome))
 
 
+
+'''
 x_values = list(range(0,g,2))
 y_values = [f for f in alist]
 plot.plot(x_values, y_values)
@@ -197,3 +212,4 @@ plot.plot(xx_value, yy_value, label = "fitnessList")
 plot.plot(xx_value, y2_value, label = "newfitnessLis")
 plot.legend()
 plot.show()
+'''
