@@ -1,4 +1,5 @@
 #Algoritmo genético 
+#FEITO ATE CROSSOVERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
 
 L = 4 * 8 #size of chromossome in bits
 
@@ -49,70 +50,40 @@ def pop_len():
                 return p
         else:
                 return p
-                
-#n = pop_len()
 
-#g = n 
-#print("population is ", n)
 
-#people = []
+def gen_len():
+        p = int(input("digit the number of generations:  "))
+        return p
 
 #generates a list of people (chromossomes)
 def population():
         for i in range(g):
-                p = random.SystemRandom().uniform(0, math.pi)
-                if p == math.pi:
-                        p = round(p)                             
-                else:
-                        print(p)
+                p = random.SystemRandom().uniform(0, 0.005) #era pi
                 person = get_bits(p)
                 print(person)
                 people.append(person)
                 
-#population() #population
-
-#print(people) #list of people
-
-#fitnessList = []
-
 #fitness calculation for each chromossome
-def calc_fitness():
-        for t in range(len(people)):
-                people[t] = get_float(people[t])
-                fitness   = people[t] + abs(math.sin(32*people[t]))
+def calc_fitness(p):
+        for t in range(len(p)):
+                p[t] = get_float(p[t])
+                fitness   = p[t] + abs(math.sin(32*p[t]))
                 fitnessList.append(fitness)
+        return fitnessList
 
-#calc_fitness()
-
-#print(fitnessList) #list of fitness 
-
-#weightsList = []
-
-def calc_weights():
-        for w in range(len(fitnessList)):
-                weights = fitnessList[w]/ (sum(fitnessList)/len(fitnessList))
+def calc_weights(fL):
+        for w in range(len(fL)):
+                weights = fL[w]/(sum(fL))
                 weightsList.append(weights)
+        return weightsList
 
-#calc_weights()
-
-#print(weightsList) #list of weights
-
-#couple = []
-
-def roullette_selection(): 
-        s = random.choices(people, weightsList, k = 2)
+def roullette_selection(sel, wl): 
+        s = random.choices(sel, wl, k = 2)
         for i in range(2):
                 c = get_bits(s[i])
                 couple.append(c)
-
-#roullette_selection()
-
-#print(couple) #couple selected
-
-#dad = couple[0] 
-#mom = couple[1]
-
-#descendants = []
+        return couple
 
 #single point crossover 
 def crossover():
@@ -127,22 +98,18 @@ def crossover():
                 d2 = mom[:]
         descendants.append(d1)
         descendants.append(d2)
-        print(descendants)
-
-#crossover() 
-
-#new_population = []
-#chrome = []
+        #print(descendants[-n:])
+        return descendants
 
 #mutation
 def mutation():
-    pm = random.randint(1,10)
+    pm = random.randint(1,6)
     if  pm == 1:
         sd = descendants[random.randint(0,1)]
-        if sd == descendants[0]:
-            new_population.append(descendants[1])
+        if sd == descendants[-2]:
+            new_population.append(descendants[-1])
         else:
-            new_population.append(descendants[0])
+            new_population.append(descendants[-2])
             ap = random.randint(0,32)
             if sd[ap] == '0':
                 m = '1'
@@ -154,61 +121,126 @@ def mutation():
                 print("position:",ap)
                 print("the mutated chromossome is: \n",md)
     else:
-        new_population.append(descendants[0])
-        new_population.append(descendants[1])
+        new_population.append(descendants[-2])
+        new_population.append(descendants[-1])
         print("doesn't occurred a mutation")
+    return new_population
 
-'''
-while True:
-    mutation()                
-    n = n +1
-    while(len(chrome) != g):
-        for i in new_population:
-            chrome.append(i)
-            print(chrome)
-    break
-'''
+#fitness calculation for each chromossome
+def calc_new_fitness():
+        for t in range(len(x)):
+                fitness = x[t] + abs(math.sin(32*x[t]))
+                new_fitnessList.append(fitness)
+                #print("List of fitness: ", new_fitnessList)
+        return new_fitnessList
+
+
 chrome = []
 n = pop_len()
 g = n
-
-print("population number is ", g)
+iterations = 0
+new_pop = []
+iters = gen_len()
 people = []
-population()   #population
-print("Population of chromossomes:",people)
-fitnessList = []
-calc_fitness() #calculates the fitness for each chromossome
-print("List of fitness: ",fitnessList)
-weightsList = []
-calc_weights() #calculates the probab weights for each chromossome
-print("Prob weights:",weightsList)
+new_chrome = []
+chromossome = []
+next_gen = []
 
 
-while True:
-    while(len(chrome) != g):    
-        couple = []
-        roullette_selection() #selects a couple of chromossomes
-        print("The couple selected: ", couple)
-        dad = couple[0] 
-        mom = couple[1]
-        descendants = []
-        crossover() #chromossomes crossover to generate descendants
-        new_population = []
-        #chrome = []
-        mutation()                
-        for i in new_population:
-            chrome.append(i)
-            print("New chromossomes: ",chrome)
-        #n = n +1
-    break
+while iterations != iters:
+    iterations+=1
+    if(iterations==1 and people ==[]):
+            print("*****************GERACAO NRO **************", iterations)
+            print("population number is ", g)
+            #people = []
+            population()   #population
+            print("Population of chromossomes:",people)
+            fitnessList = []
+            calc_fitness(people) #calculates the fitness for each chromossome
+            print("List of fitness: ",fitnessList)
+            weightsList = []
+            calc_weights(fitnessList) #calculates the probab weights for each chromossome
+            print("Prob weights:",weightsList)
+            while(len(chrome) != g):    
+                couple = []
+                roullette_selection(people, weightsList) #selects a couple of chromossomes
+                print("The couple selected: ", couple)
+                dad = couple[0] 
+                mom = couple[1]
+                descendants = []
+                crossover() #chromossomes crossover to generate descendants
+                new_population = []
+                #chrome = []
+                mutation()                
+                for i in new_population:
+                    chrome.append(i)
+                    print("New chromossomes: ",chrome)    
+            x = []
+            new_fitnessList = []
+            for j in chrome:
+               x.append(get_float(j))
+               print("In n umbers:", x)
+            calc_new_fitness()
+            print("List fitness after evolution: ", new_fitnessList)
+ 
+    if(people != []):
+                print("PASSEI POR AQUIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+                for i in new_fitnessList:
+                         person = get_bits(i)
+                         new_pop.append(person)
+                         chromossome = []
+                         weightsList = []
+                         x = []
+                         next_gen = []
+                         new_population = []
+                         fitnessList = []
+                         descendants = []
+                         new_chrome = []
+     
+    if(iterations >= 2):
+            
+            print("*****************GERACAO NRO **************", iterations)
+            print("JAJAAJAJAJAAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAAJAJJ")
+            print("new population is: ", new_pop[-n:])
+            calc_fitness(new_pop[-n:])
+            print("Nova calc fitness: ", fitnessList[-n:])
+            calc_weights(fitnessList[-n:])
+            print("nova calc weights: ", weightsList[-n:])
+
+            while(len(chromossome) != g):    
+                    x = []
+                    while not(len(x) == 2):
+                           s=random.choice(new_pop[-n:])
+                           a = s
+                           x.append(a)
+                    print("Nova couple selected:  ", x[-n:])
+                    dad = x[0] 
+                    mom = x[1]
+                    crossover()
+                    #print("DESCENDANTS:  ", descendants)    
+                    print("Nova crossover: ", [descendants[-2], descendants[-1]])
+                    #descendants = []    
+                    mutation()
+                    #print("NEW POPULATION: ", new_population)
+                    print("Mutation: ", [new_population[-2], new_population[-1]])
+                    for i in [new_population[-2],new_population[-1]]:
+                            new_chrome.append(i)
+                    chromossome.extend([new_chrome[-2],new_chrome[-1]])    
+                    print("NOVA New chromossomes", chromossome)
+
+            fitnessList = []    
+            calc_fitness(chromossome)
+            print("New Fitness list:", fitnessList)     
+            new_fitnessList = fitnessList.copy()
+            print("NOVA New fitness", new_fitnessList)
+                    
+                    
+   #break
 
 print("done!")
 print("population length: ", len(chrome))
 
-x = []
-for j in chrome:
-      x.append(get_float(j))
-print("In n umbers:", x)
+
 
 
 
