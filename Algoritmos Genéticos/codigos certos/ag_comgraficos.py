@@ -3,10 +3,11 @@
 
 L = 4 * 8 #size of chromossome in bits
 
-from ast import Store
 import struct
 import random
 import math
+import matplotlib.pyplot as plot
+import numpy as np
 
 
 def floatToBits(f):
@@ -45,6 +46,8 @@ global n
 #gets population size by user input
 def pop_len():
         p = int(input("digit the number of population:  "))
+        if (p<=2): print("minimum value is 4")
+        p = 4 
         if(p%2 != 0):
                 print("odd number")
                 p = p - 1
@@ -70,19 +73,46 @@ def calc_fitness(p):
         for t in range(len(p)):
                 p[t] = get_float(p[t])
                 fitness   = p[t] + abs(math.sin(32*p[t]))
-                fitnessList.append(fitness)
+                if fitness < 0 or fitness > math.pi:
+                        fitness = 0 
+                        fitnessList.append(fitness)
+                else:        
+                     fitnessList.append(fitness)
         return fitnessList
 
 #selects two chromossomes to posterior crossover
-def roullette_selection(listpop):
+def roullette_selection(listpop,fit):
         store = [] 
+        st = []
         while not(len(store) == 2):
-                if(iterations == 1): store.append(get_bits(random.choice(listpop)))
-        return store
+                        store.extend((random.choices(listpop,fit,k=1)))
+                        for i in store:  
+                              st.append(get_bits(i))
+        while st[-1] == st[-2]:
+              print("********************TWO EQUAL CHROMOSSOMES, MAKE NEW SELECTION************")                                       
+              st = []  
+              store.extend((random.choices(listpop,fit,k=1)))
+              for i in store: st.append(get_bits(i))
+        return  st[-2:]
+
+def roullette(lst, ft):
+        store2 = []
+        while not(len(store2) == 2):
+                        lst=lst[-n:]
+                        ft = ft[-n:]
+                        store2.extend((random.choices(lst,ft,k=1)))
+        if (store2[-1] == store2[-2]):
+              print("********************TWO EQUALS CHROMOSSOMES, MAKE NEW SELECTION************")                                       
+              store2[-1] = lst[0]
+              store2[-2] = lst[-1]
+              print("NOW, THE COUPLE IS: ", store2)
+        return store2
 
 #single point crossover 
 def crossover():
         pc = random.randint(1,10)/10 
+        if pc > 1: pc = 1
+        if pc < 0.1: pc = 0.1
         if   0.1 <= pc <= 0.7:
                 print('crossover resulted in: \n')
                 d1 = dad[0:16]+mom[16:32]
@@ -93,12 +123,13 @@ def crossover():
                 d2 = mom[:]
         descendants.append(d1)
         descendants.append(d2)
-        print(descendants)
         return descendants
 
 #mutation
 def mutation():
     pm = random.randint(1,1000)
+    if pm > 1000: pm = 1000
+    if pm < 1: pm = 1
     if  pm == 1:
         md = []
         sd = descendants[random.randint(0,1)]
@@ -108,7 +139,7 @@ def mutation():
             new_population.append(descendants[-2])
             
         ap = random.randint(0,32) 
-        if (0 > ap or ap > 32): ap = 0
+        if (0 >= ap or ap >= 32): ap = 0
         if sd[ap] == '0':
                 m = '1' 
         else:
@@ -126,11 +157,9 @@ def mutation():
     return new_population
 
 #fitness calculation for each chromossome after their evolution
-def calc_new_fitness():
-        for t in range(len(x)):
-                fitness = x[t] + abs(math.sin(32*x[t]))
-                new_fitnessList.append(fitness)
-        return new_fitnessList
+def calc_avg_fitness(newfit):
+                avg_fit = sum(newfit)/g 
+                return avg_fit
 
 
 chrome = []
@@ -142,7 +171,7 @@ iters = gen_len()
 people = []
 new_chrome = []
 chromossome = []
-
+avg = []
 
 while iterations != iters:
     iterations+=1
@@ -156,9 +185,11 @@ while iterations != iters:
             fitnessList = []
             calc_fitness(people) #calculates the fitness for each chromossome
             print("\n*****List of fitness: *****\n ",fitnessList)
+            avg.append(calc_avg_fitness(fitnessList))    
+            print("\n******AVERAGE FITNESS: ",avg)     
             while(len(chrome) != g):    
                 couple = []
-                couple = roullette_selection(people) #selects a couple of chromossomes
+                couple = roullette_selection(people,fitnessList) #selects a couple of chromossomes
                 print("\n*****The selected couple is: *****\n", couple)
                 dad = couple[0] 
                 mom = couple[1]
@@ -168,21 +199,16 @@ while iterations != iters:
                 mutation()  #chromossomes mutation (or not) to generate descendants               
                 for i in new_population:
                     chrome.append(i)
-                    print("\n*****New chromossomes: ******\n",chrome) #the new population of chromossomes
+                print("\n*****New chromossomes: ******\n",chrome) #the new population of chromossomes
             x = []
-            new_fitnessList = []
-            for j in chrome:
-               x.append(get_float(j))
-               #print("In numbers:", x)  #just for debbug
-            calc_new_fitness()           #calculates the new fitness of the evolved population
-            print("\n*****List of fitness after evolution: *****\n", new_fitnessList)
- 
+            new_gen = chrome
+            print("\n*****population list to create next generation is*****\n", new_gen)
+
     
     #if the first generation was created, the new one will be generated based on the fitnesslist from previous generation
     if(people != []):
-                for i in new_fitnessList:
-                         person = get_bits(i)
-                         new_pop.append(person)
+                for i in new_gen:
+                         new_pop.append(i)
                          chromossome = []
                          x = []
                          new_population = []
@@ -191,21 +217,18 @@ while iterations != iters:
                          new_chrome = []
      
     #is the first generation already created? so repeats the natural selection process for each next generation
-    if(iterations >= 2):
+    if(iterations >= 2 and len(avg) != iters):
             print("**************************************************")
             print("*****************GENERATION NUMBER: ", iterations)
             print("**************************************************")
-            print("\nNew population is: \n", new_pop[-n:])
+            print("\n New population is: \n",   new_pop[-n:])
             calc_fitness(new_pop[-n:])
-            print("\nNew fitness list is: \n", fitnessList[-n:])
+            print("\n New fitness list is: \n", fitnessList[-n:])
+            avg.append(calc_avg_fitness(fitnessList[-n:]))        
             #while number of chromossomes is different of population size repeats the process
             while(len(chromossome) != g):    
                     x = []
-                    #selects two chromossomess to crossover (or not)
-                    while not(len(x) == 2):
-                           s=random.choice(new_pop[-n:])
-                           a = s
-                           x.append(a)
+                    x = roullette(new_pop, fitnessList)#selects two chromossomess to crossover (or not)
                     print("\n*****Couple selected:  *****\n", x[-n:])
                     dad = x[0] 
                     mom = x[1]
@@ -217,11 +240,36 @@ while iterations != iters:
                             new_chrome.append(i)
                     chromossome.extend([new_chrome[-2],new_chrome[-1]])    
                     print("\n*****New chromossomes******\n", chromossome)
+                    
 
-            fitnessList = []    
-            calc_fitness(chromossome)  #calculates the fitness list to create the next generation
-            new_fitnessList = fitnessList.copy()
-            print("\n*****fitness list to create next generation is*****\n", new_fitnessList)
+            new_gen  = chromossome
+            print("\n*****population list to create next generation is*****\n", new_gen)
                                       
 print("done!")
 print("population length: ", len(chrome))
+print("AVG FITNESS LIST: ", avg)
+
+
+#plot avg fitness list
+xx_value = list(range(0,iters)) 
+yy_value = [f for f in chromossome]
+plot.plot(xx_value, yy_value, label = "Average fitness list")
+plot.legend()
+plot.show()
+
+
+
+'''
+#math fitness function 
+x = np.linspace(0,math.pi,200)
+y =  x + abs(np.sin(32*x))
+yy3_value = [f for f in fitnessList]
+
+fig, ax = plot.subplots()
+ax.plot(x, y, color ='blue', label = "fitness function")
+ax.plot(yy3_value, yy3_value, color='orange', label = "Chomossomes")
+
+plot.legend()
+plot.show()
+'''
+
