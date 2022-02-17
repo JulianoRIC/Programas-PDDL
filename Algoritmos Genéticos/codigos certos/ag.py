@@ -49,7 +49,8 @@ def pop_len():
         p = int(input("digit the size of population:  "))
         if (p<=2): 
                 print("minimum value is 4")
-                p = 4 
+                p = 4
+                return p
         elif(p%2 != 0):
                 print("odd number")
                 p = p - 1
@@ -97,21 +98,21 @@ def roullette_selection(listpop,fit):
               st = []  
               store.extend((random.choices(listpop,fit,k=1))) #repeat selection in population
               for i in store: st.append(get_bits(i))
-              break
         return  st[-2:]
 
 def roullette(lst, ft):
         store2 = []
+        c = 0
         while not(len(store2) == 2):
                         lst=lst[-n:]
                         ft = ft[-n:]
                         store2.extend((random.choices(lst,ft,k=1))) 
-        while (store2[-1] == store2[-2]):
+        while (store2[-1] == store2[-2]): #and c != 50):
               print("********************TWO EQUALS CHROMOSSOMES, MAKE NEW SELECTION************")                                       
-              store2[-1] = lst[0]
-              store2[-2] = lst[-1]
+              store2[-1] = lst[0+c]
+              store2[-2] = lst[-1+c]
+              c+=1
               print("NOW, THE COUPLE IS: ", store2)
-              break
         return store2
 
 #single point crossover 
@@ -135,7 +136,7 @@ def crossover():
 #mutation
 def mutation():
     pm = random.randint(1,1000)
-    if pm > 1000: pm = 1000
+    if pm > 1000: pm = 1000 
     if pm < 1: pm = 1
     if  pm == 1:
         md = []
