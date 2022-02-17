@@ -46,9 +46,10 @@ global n
 #gets population size by user input
 def pop_len():
         p = int(input("digit the number of population:  "))
-        if (p<=2): print("minimum value is 4")
-        p = 4 
-        if(p%2 != 0):
+        if (p<=2): 
+                print("minimum value is 4")
+                p = 4 
+        elif(p%2 != 0):
                 print("odd number")
                 p = p - 1
                 print("changed to even")
@@ -73,6 +74,7 @@ def calc_fitness(p):
         for t in range(len(p)):
                 p[t] = get_float(p[t])
                 fitness   = p[t] + abs(math.sin(32*p[t]))
+                #if fitness doesnt respect the limits [0,pi), their fitness is equal zero to avoid their spread
                 if fitness < 0 or fitness > math.pi:
                         fitness = 0 
                         fitnessList.append(fitness)
@@ -88,11 +90,13 @@ def roullette_selection(listpop,fit):
                         store.extend((random.choices(listpop,fit,k=1)))
                         for i in store:  
                               st.append(get_bits(i))
+        #while there are two chromossomes
         while st[-1] == st[-2]:
               print("********************TWO EQUAL CHROMOSSOMES, MAKE NEW SELECTION************")                                       
               st = []  
-              store.extend((random.choices(listpop,fit,k=1)))
+              store.extend((random.choices(listpop,fit,k=1))) #repeat selection in population
               for i in store: st.append(get_bits(i))
+              break
         return  st[-2:]
 
 def roullette(lst, ft):
@@ -101,11 +105,12 @@ def roullette(lst, ft):
                         lst=lst[-n:]
                         ft = ft[-n:]
                         store2.extend((random.choices(lst,ft,k=1))) 
-        if (store2[-1] == store2[-2]):
+        while (store2[-1] == store2[-2]):
               print("********************TWO EQUALS CHROMOSSOMES, MAKE NEW SELECTION************")                                       
               store2[-1] = lst[0]
               store2[-2] = lst[-1]
               print("NOW, THE COUPLE IS: ", store2)
+              break
         return store2
 
 #single point crossover 
@@ -117,6 +122,7 @@ def crossover():
                 print('crossover resulted in: \n')
                 d1 = dad[0:16]+mom[16:32]
                 d2 = mom[0:16]+dad[16:32]
+                print(d1,d2)
         else:
                 print("identhical copy \n")
                 d1 = dad[:]
@@ -172,6 +178,9 @@ people = []
 new_chrome = []
 chromossome = []
 avg = []
+firstgen = []
+secgen = []
+lastgen = []
 
 while iterations != iters:
     iterations+=1
@@ -203,6 +212,9 @@ while iterations != iters:
             x = []
             new_gen = chrome
             print("\n*****population list to create next generation is*****\n", new_gen)
+            for i in new_gen:
+                firstgen.append(get_float(i))
+            #print("FIRST GEN", firstgen)
 
     
     #if the first generation was created, the new one will be generated based on the fitnesslist from previous generation
@@ -244,10 +256,24 @@ while iterations != iters:
 
             new_gen  = chromossome
             print("\n*****population list to create next generation is*****\n", new_gen)
+
+
+    if(iterations == 10):
+        for j in chromossome:
+                secgen.append(get_float(j))
+    if(iterations == 600):
+        for k in chromossome:
+                lastgen.append(get_float(i))
+
                                       
 print("done!")
 print("population length: ", len(chrome))
 print("AVG FITNESS LIST: ", avg)
+
+print("FIRST GEN:", firstgen)
+print("SECOND GEN:", secgen)
+print("LAST GEN:", lastgen)
+
 #avg.insert(0,0)
 
 #plot avg fitness list
@@ -257,19 +283,42 @@ plot.plot(xx_value, yy_value, label = "Average fitness list")
 plot.legend()
 plot.show()
 
+yval  = [f for f in firstgen] #cromossomos 5a iteracao
+yval2 = [g for g in secgen]  #cromossomos 50a iteracao
+
+fg = []
+sg = []
+lg = []
+
+def fit_gen(g,h):
+        for t in g:
+                fitness   = t + abs(math.sin(32*t))
+                h.append(fitness)
+        return h
 
 
-'''
+fit_gen(firstgen, fg)
+fit_gen(secgen,   sg)
+fit_gen(lastgen, lg)
+
+print("FIRST FIT GEN:", fg)
+print("SECOND FIT GEN:", sg)
+print("LAST FIT GEN:", lg)
+
+
 #math fitness function 
 x = np.linspace(0,math.pi,200)
 y =  x + abs(np.sin(32*x))
-yy3_value = [f for f in fitnessList]
 
 fig, ax = plot.subplots()
 ax.plot(x, y, color ='blue', label = "fitness function")
-ax.plot(yy3_value, yy3_value, color='orange', label = "Chomossomes")
+ax.scatter(firstgen, fg, color='orange', label = "Chomossomes First Gen")
+ax.scatter(secgen, sg, color='black', label =    "Chomossomes Sec Gen")
+ax.scatter(lastgen, lg, color='green', label =   "Chomossomes Third Gen")
 
 plot.legend()
 plot.show()
-'''
 
+
+import os
+os.system("pause")
