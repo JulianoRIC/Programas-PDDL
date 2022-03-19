@@ -23,8 +23,8 @@ def weights_ini(n,m):
 #weights = weights_ini(3,2)
 
 #definindo o conjunto de treinamento (x,y) = (entradas, saídas desejadas)
-x = [0.05, 0.1]   
-y = [0.01, 0.99]
+x = [0.1, 0.2]   
+y = [0.4, 0.8]
 
 #inicializando a rede neural 
 def create_network(i, h, o):
@@ -36,98 +36,168 @@ def create_network(i, h, o):
 
 
 #camada de entrada, camada oculta (dois neuronios), camada de saida (dois neuronios)
-net = create_network(x,2,2)
+net = create_network(x,2,1)
 print(net)
 
 u    = []
-g_uo = []
-bias = [0.35, 0.6]
-weights = [0.15, 0.2, 0.25, 0.3, 0.4, 0.45, 0.5, 0.55]
+gu = []
+bias = [0.5, 0.1]
+weights = [0.3, 0.5, 0.7, 0.9, 0.6, 0.8]
 
-#propagacao entrada para camada oculta
+#propagacao entrada para camada 
 for j in range(len(net[1])):
         u.append(np.dot(x, weights[j*2:2*(j+1)]) + bias[0]*1)
 print("Propagação para camada oculta: ", u)
 
+
 #funcao generica de ativacao dos neuronios
 def activation(neuron):
     for j in range(len(neuron)): 
-            g_uo.append(1/(1+math.exp(-neuron[j])))
-    return g_uo
+            gu.append(1/(1+math.exp(-neuron[j])))
+    return gu
 
-g = g_uo
+g = gu
 #mostra ativacao dos neuronios da camada oculta
 print("Ativacao neuronios da camada oculta: ", activation(u))
 
-u2 = []
+o = []
 
 #propagacao camada oculta para camada de saída
 for j in range(len(net[2])):
-    u2.append(np.dot(g_uo, weights[4+j*2:2*(j+1)+4]) + bias[1]*1)
+    o.append(np.dot(gu, weights[len(net[1])*len(x)+j*2:2*(j+1)+len(net[1])*len(x)]) + bias[1]*1)
 
-print("Propagacao para camada de saída: ", u2)
+print("Propagacao para camada de saída: ", o)
 
 
 #ativacao dos neuronios da camada de saída
-g_uo = []
-print("Ativacao neuronios da camada de saída: ", activation(u2))
-g.extend(g_uo)
+gu = []
+go = activation(o)
+print("Ativacao neuronios da camada de saída: ", go)
 
-print("G historico", g)
+g.extend(go)
+print("historico ativacoes", g)
 
-erros = [ ]
 
 #calculando erro total
-def erroTotal():
-    for i in range(len(y)):
-        erros.append(0.5*(y[i] - g_uo[i])**2)
-    Etot = sum(erros)
-    return Etot
+erro = 0.5*(y[0] - go[0])**2
 
-print("Erro total eh: ", erroTotal())
+print("Erro total eh: ", erro)
+
 
 #Corrigindo os pesos da camada oculta para camada de saída
 
-#derivada do Etotal em relacao a g_uo
-def derivada_guo(y, g):
-    return -(y - g)
+#derivada do Etotal em relacao a go
+def derivada_go(y, go, i):
+    return -(y[i] - go[i])
 
-#derivada do g_uo em relacao a uo
-def derivada_uo(g):
-    return g*(1-g)
+dgo = derivada_go(y, go, 0)
+print("Derivada erro em relacao a go1: ", dgo)
 
-#derivada de uo em relacao ao peso w
+#derivada do go em relacao a o
+def derivada_o(go, i):
+    return go[i]*(1-go[i])
+
+do = derivada_o(go, 0)
+print("Derivada de go em relacao a o: ", do)
+
+delta1 = dgo*do
+print("Delta 1 eh: ", delta1)
+
+#seleciono somente as ativacoes da camada oculta
+gu = g[0:len(net[1])]
+
+dw = [ ] 
+
+#derivada de o em relacao ao peso w
 def derivada_w(gu):
-    return gu
+    for i in range(len(gu)):
+        dw.append(gu[i])
+    return dw
 
-#derivada total do erro em relacao ao peso w da camada oculta
-def derivada_etot(dg, du, dw):
-    return dg*du*dw
+dw = derivada_w(gu)
+print("As derivadas em relacao aos pesos da camada oculta  sao: ", dw)
 
-#taxa de aprendizagem
-a = 0.5
+
+dtot = np.dot(delta1, dw)
+
+print("As derivadas do erro em relacao aos pesos da camada oculta sao:", dtot)
+
+gh = []  #vetor para guardar os gradientes da camada oculta
+a = 0.5 #taxa de aprendizagem
 
 #calculando gradiente do w da camada oculta
 def gradient_hidden(w, a, dtot):
-    return w - a*dtot
+    for i in range(len(net[1])):
+        gh.append(w[i+4] - a*dtot[i])
+    return gh
 
-'''
-#calculando w5
-# print("Derivada guo", derivada_guo(y[0], g_uo[0]))
-print("Derivada uo", derivada_uo(g_uo[0]))
-print("Derivada g", derivada_w(g[0]))
-dtot =derivada_etot(derivada_guo(y[0], g_uo[0]),derivada_uo(g_uo[0]),derivada_w(g[0]))
-print("Derivada total", dtot)
-print("Gradiente eh", gradient_hidden(weights[4], a, dtot))
-'''
+grad = gradient_hidden(weights, a, dtot)
+print("Novos pesos da camada oculta em funcao do gradiente do erro sao: ", grad)
 
-dg = derivada_guo(y[1], g_uo[1])
-du = derivada_uo(g_uo[1])
-dw = derivada_w(g[1])
+#vetor dos pesos atualizados
+w_updated = [0, 0, 0, 0, 0, 0]
+w_updated[4] = grad[0] 
+w_updated[5] = grad[1] 
 
-dtot = derivada_etot(dg, du, dw)
+print("Pesos atualizados: ", w_updated)
 
-grad = gradient_hidden(weights[7], a, dtot)
+#corrigindo os pesos camada1->camada oculta
 
-print("dtot: ", dtot)
-print("gradiente:", grad)
+#derivada do erro em relacao a O1
+de_o1 = dgo*do
+#print("Deo1", de_o1)
+do_gu = weights[4]
+#print("Do gu", do_gu)
+dg_u  = derivada_o(g, 0)
+#print("Dgu ", dg_u)
+
+h1 = de_o1*do_gu*dg_u
+print("O valor de h1 eh", h1)
+
+dw = []
+dw_first = derivada_w(x)
+
+dtot_w1 = np.dot(h1, dw_first)
+
+print("Derivadas parciais do erro em relacao a w1 e w2: ", dtot_w1)
+
+do_g   = weights[5]
+dg_u2  = derivada_o(g, 1)
+
+h2 = de_o1*do_g*dg_u2 
+print("O valor de h2 eh: ", h2)
+
+dtot_w2 = np.dot(h2, dw_first)
+
+print("Derivadas parciais do erro em relacao a w3 e w4: ", dtot_w2)
+
+
+ghs = []
+
+#calculando gradiente do w da camada de entrda
+def gradient_in(w, a, dtot,j):
+    for i in range(len(net[1])):
+        ghs.append(w[i+j] - a*dtot[i])
+    return ghs
+
+grad_2 = gradient_in(weights, a, dtot_w2,0)
+print("Novos pesos w1 e w2 da camada oculta em funcao do gradiente do erro sao: ",  grad_2)
+
+w_updated[0] = grad_2[0] 
+w_updated[1] = grad_2[1]
+
+
+ghs = []
+grad_3 = gradient_in(weights, a, dtot_w2,2)
+print("Novos pesos w3 e w4 da camada oculta em funcao do gradiente do erro sao: ",  grad_3)
+
+
+w_updated[2] = grad_3[0] 
+w_updated[3] = grad_3[1]
+
+print("Todos os pesos corrigidos: ", w_updated)
+
+
+
+
+
