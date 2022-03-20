@@ -105,7 +105,7 @@ print("Propagacao para camada de saída: ", o)
 #funcao ativacao camada de saida
 def act_tanh(z, i):
     for i in range(len(z)):
-            gu.append((2/(1+np.exp(-2*z[i])))-1)
+            gu.append((np.exp(z[i]) - np.exp(-z[i])) / (np.exp(z[i]) + np.exp(-z[i])))
     return gu
 
 #ativacao dos neuronios da camada de saída
@@ -135,7 +135,6 @@ print("Derivada erro em relacao a go1: ", dgo)
 #derivada do go em relacao a o
 def derivada_o(go, i):
     return (2/(np.exp(go[i]) + np.exp(-go[i])))**2
-
 
 do = derivada_o(go, 0)
 print("Derivada de go em relacao a o: ", do)
@@ -172,7 +171,7 @@ def gradient_hidden(w, a, dtot):
     return gh
 
 grad = gradient_hidden(weights, a, dtot)
-print("Novos pesos da camada oculta em funcao do gradiente do erro sao: ", grad)
+print("Novos pesos w5 e w6 da camada oculta em funcao do gradiente do erro sao: ", grad)
 
 #vetor dos pesos atualizados
 w_updated = [0, 0, 0, 0, 0, 0]
