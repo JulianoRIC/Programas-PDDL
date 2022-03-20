@@ -1,30 +1,37 @@
-#Backpropagation Algorithm
+#Autores: Juliano Ricardo e Guilherme Ludwig
 
+
+#bibliotecas
 import math
 import random
-from re import M 
+from re import M
+import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
 
-#lista de pesos
-weights = []
 
-#metodo de Xavier para inicializacao randomica dos pesos
-'''
-def weights_ini(n,m):
-    for i in range(m*n):
-       weights.append(random.uniform(-(1/math.sqrt(n)), 1/math.sqrt(n)))
-    print("Pesos: ", weights)
-    return weights
-'''
+########################################################################################################################
 
-#n = numero de neuronios (ou entradas) na camada L
-#m = numero de neuronios na camada L+1
+#Extração de todos os exemplos (entradas) do conjunto de treinamento
+df = pd.read_csv(r"C:\Users\julia\Documents\classification2.txt")
+print(df)
 
-#weights = weights_ini(3,2)
+x = df.iloc[:,:-1].values #2 primeiras colunas
+y = df.iloc[:,-1].values  #ultima coluna
 
-#definindo o conjunto de treinamento (x,y) = (entradas, saídas desejadas)
-x = [0.1, 0.2]   
-y = [0.4, 0.8]
+#plote dos exemplos a serem separados
+pos, neg = (y==1).reshape(117,1) , (y==0).reshape(117,1)
+plt.scatter(x[pos[:,0],0], x[pos[:,0],1], c="r", marker="+")
+plt.scatter(x[neg[:,0],0], x[neg[:,0],1], marker="o", s=10)
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.legend(["Accepted", "Rejected"], loc=0)
+plt.show()
+##################################################################################################################################
+
+
+#Multi layer Perceptron - Rede Neural  
+
 
 #inicializando a rede neural 
 def create_network(i, h, o):
@@ -34,15 +41,42 @@ def create_network(i, h, o):
     for k in range(o): outputs.append(1)
     return i, hidden, outputs
 
-
 #camada de entrada, camada oculta (dois neuronios), camada de saida (dois neuronios)
 net = create_network(x,2,1)
 print(net)
 
+#lista de pesos
+weights = []
+
+#metodo de Xavier para inicializacao randomica dos pesos
+def weights_ini(n,m):
+    #n = nro de entradas e m= nro de neuronios da camada oculta
+    for i in range(n*m+m):
+       weights.append(random.uniform(-(1/math.sqrt(n)), 1/math.sqrt(n)))
+    print("Pesos: ", weights)
+    return weights
+
+#cria aleatoriamente os pesos de acordo com o numero de entradas e numero de neuronios da camada oculta
+weights = weights_ini(2, len(net[1]))
+
+bias = []
+#n eh o numero de layers da rede
+def bias_ini(n):
+    for i in range(n):
+        bias.append(np.random.uniform(0, 1))
+    return bias
+
+print("Lista de bias: ", bias_ini(2))
+
+
+#definindo o conjunto de treinamento (x,y) = (entradas, saídas desejadas)
+x = [0.1, 0.2]   
+y = [1]
+
+
 u    = []
-gu = []
+gu   = []
 bias = [0.5, 0.1]
-weights = [0.3, 0.5, 0.7, 0.9, 0.6, 0.8]
 
 #propagacao entrada para camada 
 for j in range(len(net[1])):
@@ -68,13 +102,20 @@ for j in range(len(net[2])):
 
 print("Propagacao para camada de saída: ", o)
 
+#funcao ativacao camada de saida
+def act_tanh(z, i):
+    for i in range(len(z)):
+            gu.append((2/(1+np.exp(-2*z[i])))-1)
+    return gu
+
 #ativacao dos neuronios da camada de saída
 gu = []
-go = activation(o)
+go = act_tanh(o,0)
 print("Ativacao neuronios da camada de saída: ", go)
 
 g.extend(go)
 print("historico ativacoes", g)
+
 
 #calculando erro total
 erro = 0.5*(y[0] - go[0])**2
@@ -93,7 +134,8 @@ print("Derivada erro em relacao a go1: ", dgo)
 
 #derivada do go em relacao a o
 def derivada_o(go, i):
-    return go[i]*(1-go[i])
+    return (2/(np.exp(go[i]) + np.exp(-go[i])))**2
+
 
 do = derivada_o(go, 0)
 print("Derivada de go em relacao a o: ", do)
@@ -146,7 +188,12 @@ de_o1 = dgo*do
 #print("Deo1", de_o1)
 do_gu = weights[4]
 #print("Do gu", do_gu)
-dg_u  = derivada_o(g, 0)
+
+#derivada do gu em relacao a u
+def derivada_gu(guu, i):
+    return guu[i]*(1-guu[i])
+
+dg_u  = derivada_gu(g, 0)
 #print("Dgu ", dg_u)
 
 h1 = de_o1*do_gu*dg_u
@@ -160,7 +207,7 @@ dtot_w1 = np.dot(h1, dw_first)
 print("Derivadas parciais do erro em relacao a w1 e w2: ", dtot_w1)
 
 do_g   = weights[5]
-dg_u2  = derivada_o(g, 1)
+dg_u2  = derivada_gu(g, 1)
 
 h2 = de_o1*do_g*dg_u2 
 print("O valor de h2 eh: ", h2)
@@ -194,7 +241,6 @@ w_updated[2] = grad_3[0]
 w_updated[3] = grad_3[1]
 
 print("Todos os pesos corrigidos: ", w_updated)
-
 
 
 
