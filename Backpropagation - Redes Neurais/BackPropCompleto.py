@@ -11,21 +11,23 @@ import numpy as np
 ########################################################################################################################
 
 #Extração de todos os exemplos (entradas) do conjunto de treinamento
-df = pd.read_csv(r"C:\Users\julia\Documents\classification2.txt")
-print(df)
 
-xs = df.iloc[:,:-1].values #2 primeiras colunas
-ys = df.iloc[:,-1].values  #ultima coluna
+#df = pd.read_csv(r"C:\Users\julia\Documents\classification2.txt")
+#print(df)
+
+#xs = df.iloc[:,:-1].values #2 primeiras colunas
+#ys = df.iloc[:,-1].values  #ultima coluna
 
 
 #plote dos exemplos a serem separados
-pos, neg = (ys==1).reshape(117,1) , (ys==0).reshape(117,1)
-plt.scatter(xs[pos[:,0],0], xs[pos[:,0],1], c="r", marker="+")
-plt.scatter(xs[neg[:,0],0], xs[neg[:,0],1], marker="o", s=10)
-plt.xlabel("x1")
-plt.ylabel("x2")
-plt.legend(["Accepted", "Rejected"], loc=0)
-plt.show()
+#pos, neg = (ys==1).reshape(117,1) , (ys==0).reshape(117,1)
+#plt.scatter(xs[pos[:,0],0], xs[pos[:,0],1], c="r", marker="+")
+#plt.scatter(xs[neg[:,0],0], xs[neg[:,0],1], marker="o", s=10)
+#plt.xlabel("x1")
+#plt.ylabel("x2")
+#plt.legend(["Accepted", "Rejected"], loc=0)
+#plt.show()
+
 
 #valores das entradas x1, x2 e yout
 
@@ -133,13 +135,6 @@ def gradient_in(w, a, dtot,j):
         ghs.append(w[i+j] - a*dtot[i])
     return ghs
 
-#calculando gradiente do w da camada oculta
-def gradient_hidden(w, a, dtot):
-    for i in range(len(net[1])):
-        gh.append(w[i+4] - a*dtot[i])
-    return gh
-
-
 #inicializa iteracao em 0
 cont = 0
 
@@ -224,7 +219,7 @@ while cont <=  np.size(x1) - 1:
     print("As derivadas do erro em relacao aos pesos da camada oculta sao:", dtot)
 
     gh = []  #vetor para guardar os gradientes da camada oculta
-    a = 0.1 #taxa de aprendizagem
+    a = 0.9 #taxa de aprendizagem
 
     #calculando gradiente do w da camada oculta
 
@@ -319,10 +314,4 @@ plt.legend()
 plt.show()
 
 
-x1val = []
-x2val = []
-
-for i in range(len(x)):
-    x1val.append(np.random.uniform(-1, 1))
-    x2val.append(np.random.uniform(-1, 1))
 
