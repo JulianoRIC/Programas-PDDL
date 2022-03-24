@@ -126,7 +126,6 @@ def gradient_hidden(w, a, dtot):
 
 #derivada do gu em relacao a u
 def derivada_gu(guu, i):
-    #return (2/(np.exp(guu[i]) + np.exp(-guu[i])))**2
     return 1 - np.power(np.tanh(guu[i]), 2)
 
 #calculando gradiente do w da camada de entrada    
@@ -136,13 +135,10 @@ def gradient_in(w, a, dtot,j):
     return ghs
 
 #inicializa iteracao em 0
-
 cont = 0
 c = 0
-epochs = 1000
+epochs = 10000
 saida = []
-saidaHist1 = []
-saidaHist0 = []
 erroEpoca=[]
 erroHist = []
 w1 = []
@@ -151,14 +147,17 @@ w3 = []
 w4 = []
 w5=  []
 w6 = []
-classHist = []
+saida_ver = []
+taxa = 0
+lista_taxa=[]
 
 while c <= epochs-1:
-    
+    TaxaEpoca=0
+    taxa=0
+    saida_ver=[]
     #loop: corrigindo os pesos para os 118 exemplos do classification2
-    #while cont <=  np.size(x1) - 1:
     for cont in range(np.size(x1)):
-        
+
         x = [x1[cont],x2[cont]]
         y = [y_out[cont]]
         u  = []
@@ -185,7 +184,7 @@ while c <= epochs-1:
         #print("Propagacao para camada de saída: ", o)
     
         go = activation(o) #ativacao sigmoide
-    
+        
         #print("Ativacao neuronio da camada de saída: ", go)
         saida.append(go)
     
@@ -223,7 +222,7 @@ while c <= epochs-1:
         #print("As derivadas do erro em relacao aos pesos da camada oculta sao:", dtot)
 
         gh = []  #vetor para guardar os gradientes da camada oculta
-        a = 0.5 #taxa de aprendizagem
+        a = 0.2 #taxa de aprendizagem
 
         #calculando gradiente do w da camada oculta
 
@@ -238,7 +237,7 @@ while c <= epochs-1:
         w6.append(w_updated[5])
         #print("Pesos atualizados: ", w_updated)
 
-        #corrigindo os pesos camada1->camada oculta
+        #corrigindo os pesos camada de entrada ->camada oculta
 
         #derivada do erro em relacao a O1
         de_o1 = dgo*do
@@ -288,8 +287,12 @@ while c <= epochs-1:
         w4.append(w_updated[3])
 
         #print("Todos os pesos corrigidos: ", w_updated)
-        
-    #print("************************************************iteracao********************************************************************")    
+        if go>0.5:
+            go = 1
+        else:
+            go=0
+        saida_ver.append(go)
+           
     weights = [] #limpa para receber os atuais
     w_updated = []
     w_1 = np.mean(w1)
@@ -309,13 +312,16 @@ while c <= epochs-1:
     w5 = []
     w6 = []
     erroEpoca = []
-    saida = []
     c+=1
+    for i in range(118):
+        if y_out[i]==saida_ver[i]:
+            taxa+=1
+    TaxaEpoca = taxa/118
+    lista_taxa.append(TaxaEpoca)
+    print('Taxa de acerto na época: ',TaxaEpoca)
     
 
-
-#funcao custo ao longo das iteracoes
-
+#funcao custo ao longo das iteracoes (convergencia do erro)
 plt.figure()
 x = [f for f in range(epochs)]
 y = [e for e in erroHist]
@@ -323,22 +329,59 @@ plt.plot(x, y, 'm', label = "epochs vs Cost function" )
 plt.legend()
 plt.show()
 
-
-#plot saídas
-'''
+#taxa de acertos em funcao das epocas
 plt.figure()
-xc = [f for f in range(epochs)]
-yc = [e for e in classHist]
-plt.scatter(xc, yc)
+x = [f for f in range(epochs)]
+y = [e for e in lista_taxa]
+plt.plot(x, y, 'm', label = "epochs vs Taxa de acertos" )
 plt.legend()
 plt.show()
 
+saida = []
 
-#plot saídas
+
+#fazendo a validacao 
+
+for i in range (np.size(x1)):
+    x = [x1[i],x2[i]]
+       
+    u  = []
+    gu = []
+     
+    #print("*****PESO  ANTERIOR*******", weights) 
+    #propagacao entrada para camada 
+    for j in range(len(net[1])):
+        u.append(np.dot(x, weights[j*2:2*(j+1)]) + bias[0]*1)
+    #print("Propagação para camada oculta: ", u)
+
+    g = gu
+
+    #mostra ativacao dos neuronios da camada oculta
+    act_tanh(u)
+    #print("Ativacao neuronios da camada oculta: ", act_tanh(u))
+
+    o = []
+
+    #propagacao camada oculta para camada de saída
+    for j in range(len(net[2])):
+        o.append(np.dot(gu, weights[len(net[1])*len(x)+j*2:2*(j+1)+len(net[1])*len(x)]) + bias[1]*1)
+
+    #print("Propagacao para camada de saída: ", o)
+
+    go = activation(o) #ativacao sigmoide
+    if go>0.5:
+        go=1
+    else:
+        go=0
+        
+    print('Saída: ', go)
+    saida.append(go)
+    
+#taxa de aprendizagem 
 plt.figure()
 x = [f for f in range(118)]
 y = [e for e in saida]
 plt.scatter(x, y, alpha=0.5)
 plt.legend()
 plt.show()
-'''
+
